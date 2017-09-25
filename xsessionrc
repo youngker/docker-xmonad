@@ -1,2 +1,3 @@
 #!/bin/bash
-feh --bg-scale /home/docker/Pictures/wallhaven-501871.jpg &
+feh --bg-scale /home/docker/Pictures/wallpaper1.jpg &
+xmobar &

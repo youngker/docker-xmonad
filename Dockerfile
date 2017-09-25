@@ -19,14 +19,22 @@ run apt-get install -y software-properties-common \
 #arg emacs=http://ftp.gnu.org/gnu/emacs/emacs-25.3.tar.gz
 #run cd /tmp && wget $emacs && tar -xf emacs* -C /tmp/ && cd /tmp/emacs* && bash -c "echo 0 > /proc/sys/kernel/randomize_va_space" && ./autogen.sh && ./configure && make -j 8 install && rm -rf /tmp/emacs*
 
-run apt-get install -y feh sudo
+run apt-get install -y feh sudo xmobar
 
 RUN useradd --create-home --shell /bin/bash docker && adduser docker sudo
 RUN echo "docker:docker" | chpasswd
+RUN mkdir -p /home/docker/.fonts && mkdir -p /home/docker/.xmonad
 
-ADD Xdefaults /home/docker/.Xdefaults
+ADD Xresources /home/docker/.Xresources
 ADD xsessionrc /home/docker/.xsessionrc
-ADD wallhaven-501871.jpg /home/docker/Pictures/wallhaven-501871.jpg
+ADD bashrc /home/docker/.bashrc
+ADD git-prompt.sh /home/docker/.git-prompt.sh
+ADD wallpaper1.jpg /home/docker/Pictures/wallpaper1.jpg
+ADD wallpaper2.jpg /home/docker/Pictures/wallpaper2.jpg
+ADD xmonad.hs /home/docker/.xmonad/xmonad.hs
+ADD xmobarrc /home/docker/.xmobarrc
+ADD MONACO.TTF /home/docker/.fonts/
+RUN fc-cache -vf /home/docker/.fonts && chown -R docker:docker /home/docker
 ADD start.sh /start.sh
 
 ENTRYPOINT /start.sh
