@@ -1,40 +1,36 @@
-FROM ubuntu:latest
+from ubuntu:latest
+maintainer YoungJoo Lee
 
-run apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y dbus-x11 dmenu gmrun xmonad xorg rxvt-unicode vnc4server && apt-get clean
+env XRDP_PKG xrdp-0.9.3.1
+env XORG_PKG xorgxrdp-0.2.3
 
-run apt-get install -y wget build-essential libssl-dev libpam0g-dev libxrandr-dev nasm xserver-xorg-dev libxfont1-dev pkg-config file libxfixes-dev && apt-get clean
+arg DEBIAN_FRONTEND=noninteractive
 
-run apt-get install -y autoconf automake build-essential curl git imagemagick ispell libdbus-1-dev libgif-dev libgnutls-dev libgtk2.0-dev libjpeg-dev libmagick++-dev libncurses-dev libpng-dev libtiff-dev libx11-dev libxpm-dev texinfo && apt-get clean
+run apt-get update
 
-arg xrdp=https://github.com/neutrinolabs/xrdp/releases/download/v0.9.3.1/xrdp-0.9.3.1.tar.gz
-run cd /tmp && wget $xrdp && tar -xf xrdp* -C /tmp/ && cd /tmp/xrdp* && ./configure && make && make install && rm -rf /tmp/xrdp*
+run apt-get install -y dbus-x11 dmenu feh git gmrun software-properties-common sudo wget xmobar xmonad xorg rxvt-unicode && apt-get clean
 
-arg xorgxrdp=https://github.com/neutrinolabs/xorgxrdp/releases/download/v0.2.3/xorgxrdp-0.2.3.tar.gz
-run cd /tmp && wget $xorgxrdp && tar -xf xorgxrdp* -C /tmp/ && cd /tmp/xorgxrdp* && ./configure && make && make install && rm -rf /tmp/xorgxrdp*
+run apt-get install -y emacs supervisor && apt-get clean && sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 
-run apt-get install -y software-properties-common \
-    && apt-add-repository -y ppa:kelleyk/emacs \
-    && apt-get update \
-    && apt-get install -y emacs25
-#arg emacs=http://ftp.gnu.org/gnu/emacs/emacs-25.3.tar.gz
-#run cd /tmp && wget $emacs && tar -xf emacs* -C /tmp/ && cd /tmp/emacs* && bash -c "echo 0 > /proc/sys/kernel/randomize_va_space" && ./autogen.sh && ./configure && make -j 8 install && rm -rf /tmp/emacs*
+run apt-get install -y libssl-dev libpam0g-dev nasm xserver-xorg-dev libxfont1-dev libxfixes-dev && apt-get clean
 
-run apt-get install -y feh sudo xmobar
+run cd / && \
+    wget https://github.com/neutrinolabs/xrdp/releases/download/v0.9.3.1/$XRDP_PKG.tar.gz && \
+    tar xvzf $XRDP_PKG.tar.gz && \
+    cd $XRDP_PKG && ./configure && make && make install && cd / && \
+    rm -f $XRDP_PKG.tar.gz && rm -rf $XRDP_PKG
 
-RUN useradd --create-home --shell /bin/bash docker && adduser docker sudo
-RUN echo "docker:docker" | chpasswd
-RUN mkdir -p /home/docker/.fonts && mkdir -p /home/docker/.xmonad
+run cd / && \
+    wget https://github.com/neutrinolabs/xorgxrdp/releases/download/v0.2.3/$XORG_PKG.tar.gz && \
+    tar xvzf $XORG_PKG.tar.gz && \
+    cd $XORG_PKG && ./configure && make && make install && cd / && \
+    rm -f $XORG_PKG.tar.gz && rm -rf $XORG_PKG
 
-ADD Xresources /home/docker/.Xresources
-ADD xsessionrc /home/docker/.xsessionrc
-ADD bashrc /home/docker/.bashrc
-ADD git-prompt.sh /home/docker/.git-prompt.sh
-ADD wallpaper1.jpg /home/docker/Pictures/wallpaper1.jpg
-ADD wallpaper2.jpg /home/docker/Pictures/wallpaper2.jpg
-ADD xmonad.hs /home/docker/.xmonad/xmonad.hs
-ADD xmobarrc /home/docker/.xmobarrc
-ADD MONACO.TTF /home/docker/.fonts/
-RUN fc-cache -vf /home/docker/.fonts && chown -R docker:docker /home/docker
-ADD start.sh /start.sh
+run useradd --create-home --shell /bin/bash docker && adduser docker sudo
+run echo "docker:docker" | chpasswd
 
-ENTRYPOINT /start.sh
+copy home/ /home/
+run fc-cache -vf /home/docker/.fonts && chown -R docker:docker /home/docker
+
+copy etc/ /etc/
+cmd ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

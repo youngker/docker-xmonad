@@ -1,4 +1,5 @@
 
+export TZ="Asia/Seoul"
 export TERM="xterm"
 source ~/.git-prompt.sh
 
