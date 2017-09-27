@@ -1,36 +1,65 @@
-from ubuntu:latest
-maintainer YoungJoo Lee
+FROM ubuntu:latest
+MAINTAINER YoungJoo Lee "youngker@gmail.com"
 
-env XRDP_PKG xrdp-0.9.3.1
-env XORG_PKG xorgxrdp-0.2.3
+ENV XRDP_PKG xrdp-0.9.3.1
+ENV XORG_PKG xorgxrdp-0.2.3
 
-arg DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
-run apt-get update
+RUN apt-get update && apt-get install -y \
+    dbus-x11 \
+    git \
+    locales \
+    software-properties-common \
+    sudo \
+    supervisor \
+    tzdata \
+    wget \
+    xmonad \
+    xorg \
+ && rm -rf /var/lib/apt/lists/*
 
-run apt-get install -y dbus-x11 dmenu feh git gmrun software-properties-common sudo wget xmobar xmonad xorg rxvt-unicode && apt-get clean
+RUN apt-get update && apt-get install -y \
+    libpam0g-dev \
+    libssl-dev \
+    libxfixes-dev \
+    libxfont1-dev \
+    nasm \
+    xserver-xorg-dev \
+ && rm -rf /var/lib/apt/lists/*
 
-run apt-get install -y emacs supervisor && apt-get clean && sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
-
-run apt-get install -y libssl-dev libpam0g-dev nasm xserver-xorg-dev libxfont1-dev libxfixes-dev && apt-get clean
-
-run cd / && \
+RUN cd / && \
     wget https://github.com/neutrinolabs/xrdp/releases/download/v0.9.3.1/$XRDP_PKG.tar.gz && \
     tar xvzf $XRDP_PKG.tar.gz && \
     cd $XRDP_PKG && ./configure && make && make install && cd / && \
     rm -f $XRDP_PKG.tar.gz && rm -rf $XRDP_PKG
 
-run cd / && \
+RUN cd / && \
     wget https://github.com/neutrinolabs/xorgxrdp/releases/download/v0.2.3/$XORG_PKG.tar.gz && \
     tar xvzf $XORG_PKG.tar.gz && \
     cd $XORG_PKG && ./configure && make && make install && cd / && \
     rm -f $XORG_PKG.tar.gz && rm -rf $XORG_PKG
 
-run useradd --create-home --shell /bin/bash docker && adduser docker sudo
-run echo "docker:docker" | chpasswd
+RUN apt-add-repository -y ppa:kelleyk/emacs
 
-copy home/ /home/
-run fc-cache -vf /home/docker/.fonts && chown -R docker:docker /home/docker
+RUN apt-get update && apt-get install -y \
+    dmenu \
+    emacs25 \
+    feh \
+    gmrun \
+    rxvt-unicode \
+    xmobar \
+ && rm -rf /var/lib/apt/lists/*
 
-copy etc/ /etc/
+RUN useradd -s /bin/bash -m docker && \
+    echo "docker:docker" | chpasswd && \
+    echo "docker ALL=(ALL) ALL" > /etc/sudoers.d/docker && \
+    chmod 0440 /etc/sudoers.d/docker
+
+COPY home/ /home/
+COPY etc/ /etc/
+
+run chown -R docker:docker /home/docker && fc-cache -f -v
+
+run sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 cmd ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
