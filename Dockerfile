@@ -81,6 +81,7 @@ RUN useradd -s /bin/bash -m docker && \
 run chown -R docker:docker /home/docker
 
 RUN echo 'allowed_users = anybody' > /etc/X11/Xwrapper.config
+RUN printf 'sleep 1\n/etc/skel/.dotfiles/scripts/bin/init-keyboard' >> /etc/xrdp/reconnectwm.sh
 RUN mkdir -p /var/run/dbus && chown messagebus:messagebus /var/run/dbus && dbus-uuidgen --ensure
 RUN sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

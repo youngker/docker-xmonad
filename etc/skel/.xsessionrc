@@ -6,5 +6,6 @@ stow bash
 stow compton
 stow konsole
 stow rofi
+stow scripts
 stow xmobar
 cd ..
