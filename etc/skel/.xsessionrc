@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd .dotfiles
+stow X
+stow bash
+stow compton
+stow konsole
+stow rofi
+stow xmobar
+cd ..
