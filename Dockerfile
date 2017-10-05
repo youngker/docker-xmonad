@@ -52,6 +52,10 @@ RUN apt-get update && apt-get install -y \
     wget --no-check-certificate https://github.com/neutrinolabs/xorgxrdp/releases/download/v0.2.3/xorgxrdp-0.2.3.tar.gz && \
     tar xvzf xorgxrdp-0.2.3.tar.gz && \
     cd xorgxrdp-0.2.3 && ./configure && make && make install \
+ && cd /tmp && \
+    wget --no-check-certificate https://github.com/FortAwesome/Font-Awesome/raw/master/fonts/fontawesome-webfont.ttf && \
+    mkdir -p /usr/share/fonts/truetype/awesome && cp fontawesome-webfont.ttf /usr/share/fonts/truetype/awesome && \
+    fc-cache -fv \
  && apt-get remove -y \
     build-essential \
     file \
