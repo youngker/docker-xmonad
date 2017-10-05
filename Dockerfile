@@ -65,13 +65,18 @@ RUN apt-get update && apt-get install -y \
  && apt-get -y autoremove \
  && rm -rf /var/lib/apt/lists/* /tmp/*
 
+RUN echo "Asia/Seoul" > /etc/timezone && rm /etc/localtime && \
+    ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime && dpkg-reconfigure tzdata
+
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    echo 'LANG="en_US.UTF-8"'>/etc/default/locale && dpkg-reconfigure locales
+
 RUN git clone https://github.com/youngker/dotfiles.git /etc/skel/.dotfiles && \
     git clone https://github.com/youngker/xmonadic-zest.git /etc/skel/.xmonad && \
     rm /etc/skel/.bashrc && rm /etc/fonts/conf.d/70-no-bitmaps.conf
 
 COPY etc/ /etc/
-ADD images/wallpaper1.jpg /usr/share/backgrounds/wallpaper1.jpg
-ADD images/wallpaper2.jpg /usr/share/backgrounds/wallpaper2.jpg
+COPY images/ /usr/share/backgrounds/
 
 RUN useradd -s /bin/bash -m docker && \
     echo "docker:docker" | chpasswd && \
