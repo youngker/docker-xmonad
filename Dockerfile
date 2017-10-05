@@ -9,6 +9,7 @@ RUN cd /etc/apt && \
 RUN echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf
 
 RUN apt-get update && apt-get install -y \
+    at-spi2-core \
     ca-certificates \
     compton \
     curl \
