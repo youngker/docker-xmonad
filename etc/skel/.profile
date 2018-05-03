@@ -16,6 +16,7 @@ stow konsole
 stow rofi
 stow scripts
 stow xmobar
+stow urxvt
 cd ..
 
 # if running bash
