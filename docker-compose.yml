@@ -1,8 +1,10 @@
-version: '3'
+version: '3.5'
 services:
   xmonad:
     container_name: server
     image: youngker/xmonad:1.3
+    shm_size: '2gb'
+    hostname: docker-xmonad
     ports:
       - '3389:3389'
     cap_add:
