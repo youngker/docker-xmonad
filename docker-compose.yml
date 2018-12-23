@@ -1,6 +1,7 @@
-version: '3.5'
+version: '3.7'
 services:
   xmonad:
+    build: .
     container_name: server
     image: youngker/xmonad:1.5
     shm_size: '2gb'
