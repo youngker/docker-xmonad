@@ -20,7 +20,6 @@ RUN apt-get update && apt-get install -y \
     locales \
     psmisc \
     rofi \
-    rxvt-unicode \
     stow \
     sudo \
     supervisor \
