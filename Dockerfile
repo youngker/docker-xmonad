@@ -42,6 +42,8 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 
 RUN git clone https://github.com/youngker/dotfiles.git /etc/skel/.dotfiles && \
     rm /etc/skel/.bashrc && rm /etc/fonts/conf.d/70-no-bitmaps.conf && \
+    mv /etc/skel/.dotfiles/X/.xsessionrc /etc/skel && \
+    mv /etc/skel/.dotfiles/bash/.profile /etc/skel && \
     cp -rp /etc/skel/.dotfiles/fonts /usr/share/fonts/truetype/docker && \
     fc-cache -fv
 
