@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     stow \
     sudo \
     supervisor \
+    tmux \
     tzdata \
     wget \
     xcape \
@@ -40,13 +41,11 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     echo 'LANG="en_US.UTF-8"'>/etc/default/locale && dpkg-reconfigure locales
 
 RUN git clone https://github.com/youngker/dotfiles.git /etc/skel/.dotfiles && \
-    git clone https://github.com/youngker/xmonadic-zest.git /etc/skel/.xmonad && \
-    rm /etc/skel/.bashrc && rm /etc/fonts/conf.d/70-no-bitmaps.conf
+    rm /etc/skel/.bashrc && rm /etc/fonts/conf.d/70-no-bitmaps.conf && \
+    cp -rp /etc/skel/.dotfiles/fonts /usr/share/fonts/truetype/docker && \
+    fc-cache -fv
 
 COPY etc/ /etc/
-
-COPY fonts/ /usr/share/fonts/truetype/docker/
-RUN fc-cache -fv
 
 RUN useradd -s /bin/bash -m docker && \
     echo "docker:docker" | chpasswd && \

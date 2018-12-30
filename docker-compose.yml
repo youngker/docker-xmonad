@@ -3,7 +3,7 @@ services:
   xmonad:
     build: .
     container_name: server
-    image: youngker/xmonad:1.5
+    image: youngker/xmonad:1.6
     shm_size: '2gb'
     hostname: docker-xmonad
     ports:
