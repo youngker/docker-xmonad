@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:21.04
 MAINTAINER YoungJoo Lee "youngker@gmail.com"
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -17,7 +17,11 @@ RUN apt-get update && apt-get install -y \
     feh \
     fontconfig \
     git \
+    libghc-xmonad-dev \
+    libghc-xmonad-contrib-dev \
+    libharfbuzz-dev \
     locales \
+    make \
     psmisc \
     rofi \
     stow \
@@ -42,10 +46,14 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 
 RUN git clone https://github.com/youngker/dotfiles.git /etc/skel/.dotfiles && \
     rm /etc/skel/.bashrc && rm /etc/fonts/conf.d/70-no-bitmaps.conf && \
-    mv /etc/skel/.dotfiles/X/.xsessionrc /etc/skel && \
-    mv /etc/skel/.dotfiles/bash/.profile /etc/skel && \
     cp -rp /etc/skel/.dotfiles/fonts /usr/share/fonts/truetype/docker && \
+    cd /etc/skel/.dotfiles && make && \
     fc-cache -fv
+
+RUN git clone https://github.com/youngker/st.git /tmp/st && \
+    cd /tmp/st && \
+    make install && \
+    rm -rf /tmp/st
 
 COPY etc/ /etc/
 
